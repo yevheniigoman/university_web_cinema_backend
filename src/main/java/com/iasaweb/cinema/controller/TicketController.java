@@ -19,19 +19,20 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Ticket>> all(@PathVariable Long showId) {
+    public ResponseEntity<List<Ticket>> all(@PathVariable("show_id") Long showId) {
         List<Ticket> ticketList = ticketService.findAllAtShow(showId);
         return ResponseEntity.ok(ticketList);
     }
 
     @GetMapping("/{ticket_id}")
-    public ResponseEntity<Ticket> getById(@PathVariable Long ticketId) {
+    public ResponseEntity<Ticket> getById(@PathVariable("show_id") Long showId,
+                                          @PathVariable("ticket_id") Long ticketId) {
         Ticket ticket = ticketService.findById(ticketId);
         return ResponseEntity.ok(ticket);
     }
 
     @PostMapping
-    public ResponseEntity<Ticket> create(@PathVariable Long showId, @Valid @RequestBody Ticket ticket) {
+    public ResponseEntity<Ticket> create(@PathVariable("show_id") Long showId, @Valid @RequestBody Ticket ticket) {
         Ticket createdTicket = ticketService.create(showId, ticket);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
     }
