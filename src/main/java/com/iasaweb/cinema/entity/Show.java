@@ -11,7 +11,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,10 +31,6 @@ public class Show {
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Null
-    @Column(name = "end_time", nullable = false)
-    private LocalDateTime endTime;
-
     @DecimalMin(value = "0.0", inclusive = true)
     @Column(name = "price", nullable = false, precision = 6, scale = 2)
     private BigDecimal price;
@@ -45,7 +40,6 @@ public class Show {
     public Show(Movie movie, LocalDateTime startTime, BigDecimal price) {
         this.movie = movie;
         this.startTime = startTime;
-        this.endTime = startTime.plusMinutes(movie.getMinutes());
         this.price = price;
     }
 
@@ -53,21 +47,24 @@ public class Show {
         return id;
     }
 
-    public LocalDateTime getStartTime() {
-        return startTime;
+    public Movie getMovie() {
+        return movie;
     }
 
-    public LocalDateTime getEndTime() {
-        return endTime;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
     public BigDecimal getPrice() {
         return price;
     }
 
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+    }
+
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
-        this.endTime = startTime.plusMinutes(movie.getMinutes());
     }
 
     public void setPrice(BigDecimal price) {
