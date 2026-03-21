@@ -1,47 +1,34 @@
 package com.iasaweb.cinema.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tickets")
+@Table(name = "seats")
 public class Seat {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "show_id", nullable = false)
-    private Show show; // Посилання на сеанс
+    @Column(name = "row", nullable = false)
+    private Integer row;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id", nullable = false)
-    private Seat seat; // Посилання на місце
-
-    @Column(name = "purchased_at")
-    private LocalDateTime purchasedAt;
+    @Column(name = "place", nullable = false)
+    private Integer place;
 
     public Seat() {}
 
-    public Seat(Show show, Seat seat, LocalDateTime purchasedAt) {
-        this.show = show;
-        this.seat = seat;
-        this.purchasedAt = purchasedAt;
+    public Seat(Integer row, Integer place) {
+        this.row = row;
+        this.place = place;
     }
 
     // Getters and Setters
     public Long getId() { return id; }
 
-    public Show getShow() { return show; }
-    public void setShow(Show show) { this.show = show; }
+    public Integer getRow() { return row; }
+    public void setRow(Integer row) { this.row = row; }
 
-    public Seat getSeat() { return seat; }
-    public void setSeat(Seat seat) { this.seat = seat; }
-
-    public LocalDateTime getPurchasedAt() { return purchasedAt; }
-    public void setPurchasedAt(LocalDateTime purchasedAt) { this.purchasedAt = purchasedAt; }
+    public Integer getPlace() { return place; }
+    public void setPlace(Integer place) { this.place = place; }
 }
