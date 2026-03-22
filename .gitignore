@@ -33,3 +33,4 @@ build/
 .vscode/
 
 cinema.sqlite3
+*.properties
