@@ -2,6 +2,8 @@ package com.iasaweb.cinema.service;
 
 import com.iasaweb.cinema.entity.User;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
@@ -32,5 +34,26 @@ public class JwtService {
                 .expiration(Date.from(expirationTime.toInstant()))
                 .signWith(signingKey)
                 .compact();
+    }
+
+    public String extractUserName(String token) {
+        Claims claims = extractPayload(token);
+        return claims.getSubject();
+    }
+
+    public boolean isExpired(String token) {
+        LocalDateTime expirationTime = extractExpiration(token);
+        return LocalDateTime.now().isBefore(expirationTime);
+    }
+
+    private LocalDateTime extractExpiration(String token) {
+        Claims claims = extractPayload(token);
+        Date expirationTime = claims.getExpiration();
+        return LocalDateTime.ofInstant(expirationTime.toInstant(), ZoneId.systemDefault());
+    }
+
+    private Claims extractPayload(String token) {
+        JwtParser parser = Jwts.parser().verifyWith(signingKey).build();
+        return parser.parseSignedClaims(token).getPayload();
     }
 }
