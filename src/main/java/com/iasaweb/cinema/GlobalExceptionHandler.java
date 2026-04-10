@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
         GenreNotFoundException.class,
         MovieNotFoundException.class,
-        ShowNotFoundException.class
+        ShowNotFoundException.class,
     })
     public ResponseEntity<Object> handleGenreNotFoundException(Exception ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
