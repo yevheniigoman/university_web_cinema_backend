@@ -1,6 +1,6 @@
 package com.iasaweb.cinema.controller;
 
-import com.iasaweb.cinema.entity.Movie;
+import com.iasaweb.cinema.dto.MovieDto;
 import com.iasaweb.cinema.service.MovieService;
 import com.iasaweb.cinema.exception.GenreNotFoundException;
 import com.iasaweb.cinema.exception.MovieNotFoundException;
@@ -19,28 +19,29 @@ public class MovieController {
     }
 
     @GetMapping("/movies")
-    public ResponseEntity<List<Movie>> findAll() {
-        List<Movie> movieList = movieService.findAll();
-        return ResponseEntity.ok(movieList);
+    public ResponseEntity<List<MovieDto>> findAll() {
+        List<MovieDto> movieDtoList = movieService.findAll();
+        return ResponseEntity.ok(movieDtoList);
     }
 
     @GetMapping("/movies/{id}")
-    public ResponseEntity<Movie> findById(@PathVariable("id") Long id)
+    public ResponseEntity<MovieDto> findById(@PathVariable("id") Long id)
             throws MovieNotFoundException {
-        Movie movie = movieService.findById(id);
-        return ResponseEntity.ok(movie);
+        MovieDto movieDto = movieService.findById(id);
+        return ResponseEntity.ok(movieDto);
     }
 
     @PostMapping("/movies")
-    public ResponseEntity<Movie> create(@Valid @RequestBody Movie movie) {
-        Movie savedMovie = movieService.create(movie);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedMovie);
+    public ResponseEntity<Void> create(@Valid @RequestBody MovieDto movieDto)
+            throws GenreNotFoundException {
+        movieService.create(movieDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/movies/{id}")
-    public ResponseEntity<Void> update(@PathVariable("id") Long id, @Valid @RequestBody Movie movie)
+    public ResponseEntity<Void> update(@PathVariable("id") Long id, @Valid @RequestBody MovieDto movieDto)
             throws MovieNotFoundException, GenreNotFoundException {
-        movieService.update(id, movie);
+        movieService.update(id, movieDto);
         return ResponseEntity.ok().build();
     }
 }

@@ -1,5 +1,7 @@
 package com.iasaweb.cinema.service;
 
+import com.iasaweb.cinema.dto.MovieDto;
+import com.iasaweb.cinema.dto.MovieMapper;
 import com.iasaweb.cinema.entity.Movie;
 import com.iasaweb.cinema.entity.Genre;
 import com.iasaweb.cinema.repository.MovieRepository;
@@ -18,30 +20,38 @@ public class MovieService {
         this.genreService = genreRepository;
     }
 
-    public List<Movie> findAll() {
-        return movieRepository.findAll();
+    public List<MovieDto> findAll() {
+        List<Movie> movieList = movieRepository.findAll();
+        return movieList.stream()
+                .map(MovieMapper.INSTANCE::movieToMovieDto)
+                .toList();
     }
 
-    public Movie findById(Long id) throws MovieNotFoundException {
-        return movieRepository.findById(id)
+    public MovieDto findById(Long id) throws MovieNotFoundException {
+        Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
+        return MovieMapper.INSTANCE.movieToMovieDto(movie);
     }
 
-    public Movie create(Movie movie) {
-        return movieRepository.save(movie);
+    public void create(MovieDto dto) throws GenreNotFoundException {
+        Genre genre = genreService.findById(dto.genreId());
+        Movie movie = new Movie(dto.title(), dto.description(), dto.minutes(), genre);
+        movieRepository.save(movie);
     }
 
-    public Movie update(Long id, Movie updatedMovie)
+    public void update(Long id, MovieDto updatedDto)
             throws MovieNotFoundException, GenreNotFoundException {
-        Movie currentMovie = findById(id);
+        Movie currentMovie = movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
 
-        currentMovie.setTitle(updatedMovie.getTitle());
-        currentMovie.setDescription(updatedMovie.getDescription());
-        currentMovie.setMinutes(updatedMovie.getMinutes());
+        currentMovie.setTitle(updatedDto.title());
+        currentMovie.setDescription(updatedDto.description());
+        currentMovie.setMinutes(updatedDto.minutes());
 
-        Long genreId = updatedMovie.getGenre().getId();
-        Genre genre = genreService.findById(genreId);
-        currentMovie.setGenre(genre);
-        return movieRepository.save(currentMovie);
+        if (currentMovie.getGenre().getId() != updatedDto.genreId()) {
+            Genre genre = genreService.findById(updatedDto.genreId());
+            currentMovie.setGenre(genre);
+        }
+        movieRepository.save(currentMovie);
     }
 }

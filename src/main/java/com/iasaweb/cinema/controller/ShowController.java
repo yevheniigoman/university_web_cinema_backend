@@ -1,6 +1,7 @@
 package com.iasaweb.cinema.controller;
 
 import com.iasaweb.cinema.entity.Show;
+import com.iasaweb.cinema.dto.ShowDto;
 import com.iasaweb.cinema.service.ShowService;
 import com.iasaweb.cinema.exception.ShowNotFoundException;
 import com.iasaweb.cinema.exception.MovieNotFoundException;
@@ -24,28 +25,28 @@ public class ShowController {
     }
 
     @GetMapping("/shows")
-    public ResponseEntity<List<Show>> findAll() {
-        List<Show> showList = showService.findAll();
-        return ResponseEntity.ok(showList);
+    public ResponseEntity<List<ShowDto>> findAll() {
+        List<ShowDto> showDtoList = showService.findAll();
+        return ResponseEntity.ok(showDtoList);
     }
 
     @GetMapping("/shows/{id}")
-    public ResponseEntity<Show> findById(@PathVariable("id") Long id)
+    public ResponseEntity<ShowDto> findById(@PathVariable("id") Long id)
             throws ShowNotFoundException {
-        Show show = showService.findById(id);
-        return ResponseEntity.ok(show);
+        ShowDto showDto = showService.findById(id);
+        return ResponseEntity.ok(showDto);
     }
 
     @PostMapping("/shows")
-    public ResponseEntity<Show> create(@Valid @RequestBody Show show) {
-        Show savedShow = showService.create(show);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedShow);
+    public ResponseEntity<Void> create(@Valid @RequestBody ShowDto showDto) {
+        showService.create(showDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/shows/{id}")
-    public ResponseEntity<Void> update(@PathVariable("id") Long id, @Valid @RequestBody Show show)
+    public ResponseEntity<Void> update(@PathVariable("id") Long id, @Valid @RequestBody ShowDto showDto)
             throws ShowNotFoundException, MovieNotFoundException {
-        showService.update(id, show);
+        showService.update(id, showDto);
         return ResponseEntity.ok().build();
     }
 }

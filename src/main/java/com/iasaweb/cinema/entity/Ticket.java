@@ -32,7 +32,6 @@ public class Ticket {
         this.purchasedAt = purchasedAt;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
 
     public Show getShow() { return show; }

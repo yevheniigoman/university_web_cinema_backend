@@ -1,8 +1,11 @@
 package com.iasaweb.cinema.service;
 
+import com.iasaweb.cinema.dto.ShowMapper;
 import com.iasaweb.cinema.entity.Show;
+import com.iasaweb.cinema.dto.ShowDto;
 import com.iasaweb.cinema.entity.Movie;
 import com.iasaweb.cinema.exception.MovieNotFoundException;
+import com.iasaweb.cinema.repository.MovieRepository;
 import com.iasaweb.cinema.repository.ShowRepository;
 import com.iasaweb.cinema.exception.ShowNotFoundException;
 import org.springframework.stereotype.Service;
@@ -11,36 +14,45 @@ import java.util.List;
 @Service
 public class ShowService {
     private final ShowRepository showRepository;
-    private final MovieService movieService;
+    private final MovieRepository movieRepository;
 
-    public ShowService(ShowRepository showRepository, MovieService movieService) {
+    public ShowService(ShowRepository showRepository, MovieRepository movieRepository) {
         this.showRepository = showRepository;
-        this.movieService = movieService;
+        this.movieRepository = movieRepository;
     }
 
-    public List<Show> findAll() {
-        return showRepository.findAll();
+    public List<ShowDto> findAll() {
+        List<Show> showList = showRepository.findAll();
+        return showList.stream().map(ShowMapper.INSTANCE::showToShowDto).toList();
     }
 
-    public Show findById(Long id) throws ShowNotFoundException {
-        return showRepository.findById(id)
+    public ShowDto findById(Long id) throws ShowNotFoundException {
+        Show show = showRepository.findById(id)
                 .orElseThrow(() -> new ShowNotFoundException(id));
+        return ShowMapper.INSTANCE.showToShowDto(show);
     }
 
-    public Show create(Show show) {
-        return showRepository.save(show);
+    public void create(ShowDto dto) {
+        Movie movie = movieRepository.findById(dto.movieId())
+                .orElseThrow(() -> new MovieNotFoundException(dto.movieId()));
+        Show show = new Show(movie, dto.startTime(), dto.price());
+        showRepository.save(show);
     }
 
-    public Show update(Long id, Show updatedShow)
+    public void update(Long id, ShowDto updatedDto)
             throws ShowNotFoundException, MovieNotFoundException {
-        Show currentShow = findById(id);
+        Show currentShow = showRepository.findById(id)
+                .orElseThrow(() -> new ShowNotFoundException(id));
 
-        currentShow.setStartTime(updatedShow.getStartTime());
-        currentShow.setPrice(updatedShow.getPrice());
+        currentShow.setStartTime(updatedDto.startTime());
+        currentShow.setPrice(updatedDto.price());
 
-        Long movieId = updatedShow.getMovie().getId();
-        Movie movie = movieService.findById(movieId);
-        currentShow.setMovie(movie);
-        return showRepository.save(currentShow);
+        long movieId = updatedDto.movieId();
+        if (currentShow.getMovie().getId() != movieId) {
+            Movie movie = movieRepository.findById(movieId)
+                    .orElseThrow(() -> new MovieNotFoundException(movieId));
+            currentShow.setMovie(movie);
+        }
+        showRepository.save(currentShow);
     }
 }
