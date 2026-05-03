@@ -1,6 +1,6 @@
 package com.iasaweb.cinema.controller;
 
-import com.iasaweb.cinema.entity.Ticket;
+import com.iasaweb.cinema.dto.TicketDto;
 import com.iasaweb.cinema.service.TicketService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,21 +19,20 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Ticket>> all(@PathVariable("show_id") Long showId) {
-        List<Ticket> ticketList = ticketService.findAllAtShow(showId);
-        return ResponseEntity.ok(ticketList);
+    public ResponseEntity<List<TicketDto>> all(@PathVariable("show_id") long showId) {
+        List<TicketDto> ticketDtoList = ticketService.findByShowId(showId);
+        return ResponseEntity.ok(ticketDtoList);
     }
 
     @GetMapping("/{ticket_id}")
-    public ResponseEntity<Ticket> getById(@PathVariable("show_id") Long showId,
-                                          @PathVariable("ticket_id") Long ticketId) {
-        Ticket ticket = ticketService.findById(ticketId);
-        return ResponseEntity.ok(ticket);
+    public ResponseEntity<TicketDto> getById(@PathVariable("ticket_id") long ticketId) {
+        TicketDto ticketDto = ticketService.findById(ticketId);
+        return ResponseEntity.ok(ticketDto);
     }
 
     @PostMapping
-    public ResponseEntity<Ticket> create(@PathVariable("show_id") Long showId, @Valid @RequestBody Ticket ticket) {
-        Ticket createdTicket = ticketService.create(showId, ticket);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
+    public ResponseEntity<Void> create(@Valid @RequestBody TicketDto ticketDto) {
+        ticketService.create(ticketDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
