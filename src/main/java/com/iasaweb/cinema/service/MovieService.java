@@ -1,7 +1,7 @@
 package com.iasaweb.cinema.service;
 
+import com.iasaweb.cinema.dto.CinemaMapper;
 import com.iasaweb.cinema.dto.MovieDto;
-import com.iasaweb.cinema.dto.MovieMapper;
 import com.iasaweb.cinema.entity.Movie;
 import com.iasaweb.cinema.entity.Genre;
 import com.iasaweb.cinema.repository.MovieRepository;
@@ -23,14 +23,14 @@ public class MovieService {
     public List<MovieDto> findAll() {
         List<Movie> movieList = movieRepository.findAll();
         return movieList.stream()
-                .map(MovieMapper.INSTANCE::movieToMovieDto)
+                .map(CinemaMapper.INSTANCE::movieToMovieDto)
                 .toList();
     }
 
     public MovieDto findById(Long id) throws MovieNotFoundException {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
-        return MovieMapper.INSTANCE.movieToMovieDto(movie);
+        return CinemaMapper.INSTANCE.movieToMovieDto(movie);
     }
 
     public void create(MovieDto dto) throws GenreNotFoundException {

@@ -23,12 +23,11 @@ public class Seat {
         this.place = place;
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
+    public long getId() { return id; }
 
-    public Integer getRow() { return row; }
-    public void setRow(Integer row) { this.row = row; }
+    public int getRow() { return row; }
+    public void setRow(int row) { this.row = row; }
 
-    public Integer getPlace() { return place; }
-    public void setPlace(Integer place) { this.place = place; }
+    public int getPlace() { return place; }
+    public void setPlace(int place) { this.place = place; }
 }

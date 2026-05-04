@@ -58,6 +58,13 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+		<!-- rabbitmq client -->
+		<dependency>
+			<groupId>com.rabbitmq</groupId>
+			<artifactId>amqp-client</artifactId>
+			<version>5.30.0</version>
+		</dependency>
+
 		<!-- mapstruct -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>

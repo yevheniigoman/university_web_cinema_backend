@@ -1,20 +1,21 @@
 package com.iasaweb.cinema.service;
 
+import com.iasaweb.cinema.dto.CinemaMapper;
 import com.iasaweb.cinema.entity.Ticket;
 import com.iasaweb.cinema.entity.Show;
 import com.iasaweb.cinema.entity.Seat;
 import com.iasaweb.cinema.repository.SeatRepository;
 import com.iasaweb.cinema.repository.TicketRepository;
 import com.iasaweb.cinema.repository.ShowRepository;
-import com.iasaweb.cinema.dto.TicketDto;
-import com.iasaweb.cinema.dto.TicketMapper;
+import com.iasaweb.cinema.dto.TicketCreateDto;
+import com.iasaweb.cinema.dto.TicketReadDto;
 import com.iasaweb.cinema.exception.ShowNotFoundException;
 import com.iasaweb.cinema.exception.SeatNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 public class TicketService {
@@ -32,21 +33,21 @@ public class TicketService {
         this.seatRepository = seatRepository;
     }
 
-    public List<TicketDto> findByShowId(long showId) {
+    public List<TicketReadDto> findByShowId(long showId) {
         List<Ticket> ticketList = ticketRepository.findByShowId(showId);
         return ticketList.stream()
-                .map(TicketMapper.INSTANCE::ticketToTicketDto)
+                .map(CinemaMapper.INSTANCE::ticketToTicketReadDto)
                 .toList();
     }
 
-    public TicketDto findById(long ticketId) {
+    public TicketReadDto findById(long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket with id " + ticketId + " not found"));
-        return TicketMapper.INSTANCE.ticketToTicketDto(ticket);
+        return CinemaMapper.INSTANCE.ticketToTicketReadDto(ticket);
     }
 
     @Transactional
-    public void create(TicketDto dto)
+    public TicketReadDto create(TicketCreateDto dto)
             throws ShowNotFoundException, SeatNotFoundException {
         Show show = showRepository.findById(dto.showId())
                 .orElseThrow(() -> new ShowNotFoundException(dto.showId()));
@@ -55,6 +56,7 @@ public class TicketService {
                 .orElseThrow(() -> new SeatNotFoundException(dto.seatId()));
 
         Ticket ticket = new Ticket(show, seat, LocalDateTime.now());
-        ticketRepository.save(ticket);
+        ticket = ticketRepository.save(ticket);
+        return CinemaMapper.INSTANCE.ticketToTicketReadDto(ticket);
     }
 }

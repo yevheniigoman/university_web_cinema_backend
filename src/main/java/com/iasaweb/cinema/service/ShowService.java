@@ -1,12 +1,13 @@
 package com.iasaweb.cinema.service;
 
-import com.iasaweb.cinema.dto.ShowMapper;
 import com.iasaweb.cinema.entity.Show;
-import com.iasaweb.cinema.dto.ShowDto;
 import com.iasaweb.cinema.entity.Movie;
-import com.iasaweb.cinema.exception.MovieNotFoundException;
+import com.iasaweb.cinema.dto.ShowReadDto;
+import com.iasaweb.cinema.dto.ShowCreateDto;
+import com.iasaweb.cinema.dto.CinemaMapper;
 import com.iasaweb.cinema.repository.MovieRepository;
 import com.iasaweb.cinema.repository.ShowRepository;
+import com.iasaweb.cinema.exception.MovieNotFoundException;
 import com.iasaweb.cinema.exception.ShowNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -21,25 +22,25 @@ public class ShowService {
         this.movieRepository = movieRepository;
     }
 
-    public List<ShowDto> findAll() {
+    public List<ShowReadDto> findAll() {
         List<Show> showList = showRepository.findAll();
-        return showList.stream().map(ShowMapper.INSTANCE::showToShowDto).toList();
+        return showList.stream().map(CinemaMapper.INSTANCE::showToShowReadDto).toList();
     }
 
-    public ShowDto findById(Long id) throws ShowNotFoundException {
+    public ShowReadDto findById(Long id) throws ShowNotFoundException {
         Show show = showRepository.findById(id)
                 .orElseThrow(() -> new ShowNotFoundException(id));
-        return ShowMapper.INSTANCE.showToShowDto(show);
+        return CinemaMapper.INSTANCE.showToShowReadDto(show);
     }
 
-    public void create(ShowDto dto) {
+    public void create(ShowCreateDto dto) {
         Movie movie = movieRepository.findById(dto.movieId())
                 .orElseThrow(() -> new MovieNotFoundException(dto.movieId()));
         Show show = new Show(movie, dto.startTime(), dto.price());
         showRepository.save(show);
     }
 
-    public void update(Long id, ShowDto updatedDto)
+    public void update(Long id, ShowCreateDto updatedDto)
             throws ShowNotFoundException, MovieNotFoundException {
         Show currentShow = showRepository.findById(id)
                 .orElseThrow(() -> new ShowNotFoundException(id));
