@@ -38,6 +38,9 @@ public class Movie {
     @JoinColumn(name = "genre_id", nullable = false)
     private Genre genre;
 
+    @Column(name = "image_url", nullable = false)
+    private String imageUrl = "";
+
     public Movie() {}
 
     public Movie(String title, String description, Integer minutes, Genre genre) {
@@ -67,6 +70,10 @@ public class Movie {
         return genre;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -81,5 +88,9 @@ public class Movie {
 
     public void setGenre(Genre genre) {
         this.genre = genre;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

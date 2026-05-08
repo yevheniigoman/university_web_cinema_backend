@@ -36,8 +36,11 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@Valid @RequestBody TicketCreateDto ticketDto) {
-        TicketReadDto ticketReadDto = ticketService.create(ticketDto);
+    public ResponseEntity<Void> create(
+        @RequestHeader("Cinema-User") String userEmail,
+        @Valid @RequestBody TicketCreateDto ticketDto
+    ) {
+        TicketReadDto ticketReadDto = ticketService.create(ticketDto, userEmail);
         rabbitMQService.publishTicketCreated(ticketReadDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

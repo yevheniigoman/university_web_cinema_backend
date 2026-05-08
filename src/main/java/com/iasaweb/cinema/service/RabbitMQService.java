@@ -23,8 +23,6 @@ public class RabbitMQService {
             channel.queueDeclare(TICKETS_QUEUE, true, false, false, Map.of());
             String payload = objectMapper.writeValueAsString(ticket);
             channel.basicPublish("", TICKETS_QUEUE, null, payload.getBytes());
-            System.out.println("Message sent successfully");
-            System.out.println("Payload: " + payload);
         } catch (Exception _) {}
     }
 }

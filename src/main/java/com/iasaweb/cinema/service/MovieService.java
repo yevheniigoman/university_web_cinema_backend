@@ -7,17 +7,28 @@ import com.iasaweb.cinema.entity.Genre;
 import com.iasaweb.cinema.repository.MovieRepository;
 import com.iasaweb.cinema.exception.MovieNotFoundException;
 import com.iasaweb.cinema.exception.GenreNotFoundException;
+import io.minio.StatObjectResponse;
+import io.minio.errors.MinioException;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
 public class MovieService {
     private final MovieRepository movieRepository;
     private final GenreService genreService;
+    private final MinioService minioService;
 
-    public MovieService(MovieRepository movieRepository, GenreService genreRepository) {
+    public MovieService(MovieRepository movieRepository,
+                        GenreService genreRepository,
+                        MinioService minioService) {
         this.movieRepository = movieRepository;
         this.genreService = genreRepository;
+        this.minioService = minioService;
     }
 
     public List<MovieDto> findAll() {
@@ -27,7 +38,7 @@ public class MovieService {
                 .toList();
     }
 
-    public MovieDto findById(Long id) throws MovieNotFoundException {
+    public MovieDto findById(long id) throws MovieNotFoundException {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
         return CinemaMapper.INSTANCE.movieToMovieDto(movie);
@@ -39,7 +50,7 @@ public class MovieService {
         movieRepository.save(movie);
     }
 
-    public void update(Long id, MovieDto updatedDto)
+    public void update(long id, MovieDto updatedDto)
             throws MovieNotFoundException, GenreNotFoundException {
         Movie currentMovie = movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
@@ -54,4 +65,20 @@ public class MovieService {
         }
         movieRepository.save(currentMovie);
     }
+
+    public void updateImage(long id, MultipartFile file) throws MinioException, IOException {
+        minioService.uploadMovieImage(file);
+
+        Movie currentMovie = movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
+        currentMovie.setImageUrl(file.getOriginalFilename());
+        movieRepository.save(currentMovie);
+    }
+
+//    public String getTemporaryImageUrlById(long movieId) throws MinioException {
+//        Movie currentMovie = movieRepository.findById(movieId)
+//                .orElseThrow(() -> new MovieNotFoundException(movieId));
+//        String imageUrl = currentMovie.getImageUrl();
+//        return minioService.getTemporaryMovieImageUrl(imageUrl);
+//    }
 }

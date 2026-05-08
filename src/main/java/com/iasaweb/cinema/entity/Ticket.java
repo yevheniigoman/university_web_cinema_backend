@@ -11,6 +11,9 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_email", nullable = false)
+    private String userEmail;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "show_id", nullable = false)
@@ -26,13 +29,17 @@ public class Ticket {
 
     public Ticket() {}
 
-    public Ticket(Show show, Seat seat, LocalDateTime purchasedAt) {
+    public Ticket(String userEmail, Show show, Seat seat, LocalDateTime purchasedAt) {
+        this.userEmail = userEmail;
         this.show = show;
         this.seat = seat;
         this.purchasedAt = purchasedAt;
     }
 
     public Long getId() { return id; }
+
+    public String getUserEmail() { return userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
 
     public Show getShow() { return show; }
     public void setShow(Show show) { this.show = show; }

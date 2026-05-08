@@ -47,7 +47,7 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketReadDto create(TicketCreateDto dto)
+    public TicketReadDto create(TicketCreateDto dto, String userEmail)
             throws ShowNotFoundException, SeatNotFoundException {
         Show show = showRepository.findById(dto.showId())
                 .orElseThrow(() -> new ShowNotFoundException(dto.showId()));
@@ -55,7 +55,7 @@ public class TicketService {
         Seat seat = seatRepository.findById(dto.seatId())
                 .orElseThrow(() -> new SeatNotFoundException(dto.seatId()));
 
-        Ticket ticket = new Ticket(show, seat, LocalDateTime.now());
+        Ticket ticket = new Ticket(userEmail, show, seat, LocalDateTime.now());
         ticket = ticketRepository.save(ticket);
         return CinemaMapper.INSTANCE.ticketToTicketReadDto(ticket);
     }

@@ -4,5 +4,6 @@ public record MovieDto(
     String title,
     String description,
     int minutes,
-    long genreId
+    long genreId,
+    String imageUrl
 ) {}
